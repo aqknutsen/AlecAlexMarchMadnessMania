@@ -1,6 +1,4 @@
 from urllib2 import Request, urlopen, URLError
-import pandas as pd
-import numpy as np
 import sqlite3
 from bs4 import BeautifulSoup
 
@@ -20,6 +18,7 @@ class GetData:
         c.execute('''create table ScoringData
                                (YEAR integer, TEAM text, GP integer, PTS numeric, FGMvsFGA text, FGPer numeric, THRMvsTHRAA text
                               , THRPer numeric, FTMvsFTMA text, FTPer numeric)''')
+
 
         while year != 2002:
 
