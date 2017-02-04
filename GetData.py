@@ -35,7 +35,15 @@ class GetData:
                                  , PF integer, StealsTurnoverRation numeric, StealsPersonalFouls numeric)''',
                             '''create table EspnBlocks
                                   (YEAR integer, TEAM text, GP integer, BLK integer, PF integer, BLKPG numeric, BLKTOPF numeric)''',
-
+                            '''DROP TABLE EspnScoringData'''
+                            '''DROP TABLE EspnReboundData'''
+                            '''DROP TABLE EspnFieldGoalData'''
+                            '''DROP TABLE EspnFreeThrows'''
+                            '''DROP TABLE ThreePointData'''
+                            '''DROP TABLE EspnAssists'''
+                            '''DROP TABLE EspnSteals'''
+                            '''DROP TABLE EspnBlocks'''
+                            
     ]
 
     insert_queries = ['insert into ScoringData values (?,?,?,?,?,?,?,?,?,?)',
@@ -128,6 +136,7 @@ class GetData:
 
 Instance = GetData()
 Instance.get_scores()
+
 
 
 
