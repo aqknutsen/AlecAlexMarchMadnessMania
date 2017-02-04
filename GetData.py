@@ -23,15 +23,15 @@ class GetData:
                             '''create table EspnFreeThrows
                               (YEAR integer, TEAM text, GP integer, PPG numeric, FTMPer numeric, FTAPer numeric, FTM integer
                              , FTA integer, FTPercentage numeric )''',
-                            '''create table ThreePointData
+                            '''create table EspnThreePointData
                                  (YEAR integer, TEAM text, GP integer, PPG numeric, ThreesMadePerGame numeric, ThreesAttemptedPerGame numeric, ThreesMade integer
                                 , ThreesAttempted integer, ThreePercentage numeric, TwoPointersMade integer, TwoPointersAttempted integer,
                                  TwoPointPercentage integer, PPS numeric, AdjustedFieldGoalPer numeric )''',
                             '''create table EspnAssists
-                                  (YEAR integer, TEAM text, GP integer, AST integer, APG numeric, TO integer, TOPG numeric
+                                  (YEAR integer, TEAM text, GP integer, AST integer, APG numeric, Turnovers integer, TOPG numeric
                                  , AssistTurnoverRatio numeric)''',
                             '''create table EspnSteals
-                                  (YEAR integer, TEAM text, GP integer, STL integer, STPG numeric, TO integer, TOPG numeric
+                                  (YEAR integer, TEAM text, GP integer, STL integer, STPG numeric, Turnovers integer, TOPG numeric
                                  , PF integer, StealsTurnoverRation numeric, StealsPersonalFouls numeric)''',
                             '''create table EspnBlocks
                                   (YEAR integer, TEAM text, GP integer, BLK integer, PF integer, BLKPG numeric, BLKTOPF numeric)''',
@@ -46,11 +46,11 @@ class GetData:
 
     ]
 
-    insert_queries = ['insert into ScoringData values (?,?,?,?,?,?,?,?,?,?)',
+    insert_queries = ['insert into EspnScoringData values (?,?,?,?,?,?,?,?,?,?)',
                       'insert into EspnReboundData values (?,?,?,?,?,?,?,?,?)',
                       'insert into EspnFieldGoalData values (?,?,?,?,?,?,?,?,?, ?, ?, ?, ?, ?)',
                       'insert into EspnFreeThrows values (?,?,?,?,?,?,?,?,?)',
-                      'insert into ThreePointData values (?,?,?,?,?,?,?,?,?, ?, ?, ?, ?, ?)',
+                      'insert into EspnThreePointData values (?,?,?,?,?,?,?,?,?, ?, ?, ?, ?, ?)',
                       'insert into EspnAssists values (?,?,?,?,?,?,?,?)',
                       'insert into EspnSteals values (?,?,?,?,?,?,?,?,?,?)',
                       'insert into EspnBlocks values (?,?,?,?,?,?,?)'
@@ -63,8 +63,6 @@ class GetData:
 
     def espnpulls(self):
         fulllist = []
-        print 'hello'
-
         for year in range(2002, 2017):
             for statitem in self.statslist:
                 for count in range(1, 360, 40):
@@ -80,20 +78,49 @@ class GetData:
         conn = sqlite3.connect('ESPNDATA.db')
         c = conn.cursor()
 
-        prev_stat = ''
+        prev_stat = url_links[0][1]
+
+        c.execute(self.create_table_queries[0])
 
         indices_for_database = 0
 
+        all_tables_created = False
+
         for url in range(0, len(url_links)):
+
+            print "URL DONE"
 
             scoring_data = [[]]
 
             current_stat = url_links[url][1]
 
-            if not current_stat == prev_stat:
+            if all_tables_created:
+                if not current_stat == prev_stat:
 
-                c.execute(self.create_table_queries[indices_for_database])
-                indices_for_database+=indices_for_database+1
+                    if prev_stat == 'blocks':
+
+                        indices_for_database = 0
+
+                    else:
+                        indices_for_database += 1
+
+
+            else:
+                if not current_stat == prev_stat:
+
+                    if prev_stat == 'blocks':
+                        indices_for_database = 0
+                        all_tables_created = True
+
+                    else:
+                        indices_for_database +=1
+                        c.execute(self.create_table_queries[indices_for_database])
+
+
+
+
+
+
 
             request = Request(url_links[url][0])
 
@@ -117,12 +144,11 @@ class GetData:
                 print 'Error Code'
 
             for i in range(1, len(scoring_data)):
-                temp_tuple = (year)
-                for j in range(0, len(self.lengths[indices_for_database])):
+                temp_tuple =[url_links[url][2]]
+                for j in range(0, len(scoring_data[i])):
+                    temp_tuple.append(scoring_data[i][j])
+                    temp_tuple = tuple(temp_tuple)
                     temp_tuple = list(temp_tuple)
-                    temp_tuple.insert(scoring_data[i][j+1])
-                    temp_tuple= tuple(temp_tuple)
-
                 c.execute(self.insert_queries[indices_for_database], temp_tuple )
 
             prev_stat = current_stat
