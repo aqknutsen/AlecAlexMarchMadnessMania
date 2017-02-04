@@ -62,7 +62,7 @@ class GetData:
                 for count in range(1, 360, 40):
                     fulllist.append(
                         ['http://www.espn.com/mens-college-basketball/statistics/team/_/stat/' + statitem + '/year/' + str(
-                            year) + '/count/' + str(count), statitem])
+                            year) + '/count/' + str(count), statitem, year])
         return fulllist
 
     def get_scores(self):
