@@ -61,13 +61,13 @@ class GetData:
             for statitem in self.statslist:
                 for count in range(1, 360, 40):
                     fulllist.append(
-                        'http://www.espn.com/mens-college-basketball/statistics/team/_/stat/' + statitem + '/year/' + str(
-                            year) + '/count/' + str(count))
-        return fullist
+                        ['http://www.espn.com/mens-college-basketball/statistics/team/_/stat/' + statitem + '/year/' + str(
+                            year) + '/count/' + str(count),statitem])
+        return fulllist
 
     def get_scores(self):
 
-        url_links = espnpulls
+        url_links = self.espnpulls()
 
         conn = sqlite3.connect('ESPNDATA.db')
         c = conn.cursor()
