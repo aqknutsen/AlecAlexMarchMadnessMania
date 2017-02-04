@@ -73,22 +73,21 @@ class GetData:
         c = conn.cursor()
 
         prev_stat = ''
-        current_stat = url_links[url + 1]
 
         indices_for_database = 0
 
-
-        for url in range(0, len(url_links)-1):
+        for url in range(0, len(url_links)):
 
             scoring_data = [[]]
 
+            current_stat = url_links[url][1]
 
-            if not current_stat.equals(prev_stat):
+            if not current_stat == prev_stat:
 
                 c.execute(self.create_table_queries[indices_for_database])
                 indices_for_database+=indices_for_database+1
 
-            request = Request(url_links[url])
+            request = Request(url_links[url][0])
 
             try:
                 response = urlopen(request)
@@ -118,7 +117,7 @@ class GetData:
 
                 c.execute(self.insert_queries[indices_for_database], temp_tuple )
 
-            url+=2
+            prev_stat = current_stat
 
             conn.commit()
 
