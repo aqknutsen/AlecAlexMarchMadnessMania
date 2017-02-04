@@ -62,7 +62,7 @@ class GetData:
                 for count in range(1, 360, 40):
                     fulllist.append(
                         ['http://www.espn.com/mens-college-basketball/statistics/team/_/stat/' + statitem + '/year/' + str(
-                            year) + '/count/' + str(count),statitem])
+                            year) + '/count/' + str(count), statitem])
         return fulllist
 
     def get_scores(self):
@@ -71,48 +71,56 @@ class GetData:
 
         conn = sqlite3.connect('ESPNDATA.db')
         c = conn.cursor()
-        c.execute(self.create_table_queries[0])
+
+        prev_stat = ''
+        current_stat = url_links[url + 1]
+
+        indices_for_database = 0
 
 
-        scoring_data = [[]]
+        for url in range(0, len(url_links)-1):
+
+            scoring_data = [[]]
 
 
-        if year != 2017:
-            url = 'http://www.espn.com/mens-college-basketball/statistics/team/_' \
-                  '/stat/scoring-per-game/sort/avgPoints/year/'+str(year)+'/count/' + str(count)
-        else:
-            url = 'http://www.espn.com/mens-college-basketball/statistics/team/_' \
-                  '/stat/scoring-per-game/sort/avgPoints/count/' + str(count)
+            if not current_stat.equals(prev_stat):
 
-        request = Request(url)
+                c.execute(self.create_table_queries[indices_for_database])
+                indices_for_database+=indices_for_database+1
 
-        try:
-            response = urlopen(request)
-            soup = BeautifulSoup(response.read(), 'html.parser')
+            request = Request(url_links[url])
 
-            for link in soup.find_all('a'):
-                if 'mens-college-basketball/team/' in link.get('href'):
-                    row = link.find_parent('tr')
-                    temp_list = []
-                    for i in range(1,len(row.contents)):
-                        temp_list.append(row.contents[i].get_text())
-                    scoring_data.append(temp_list)
+            try:
+                response = urlopen(request)
+                soup = BeautifulSoup(response.read(), 'html.parser')
 
+                for link in soup.find_all('a'):
 
-        except URLError, e:
-            print 'Error Code'
+                    if 'mens-college-basketball/team/' in link.get('href'):
 
+                        row = link.find_parent('tr')
 
-        for i in range(1, len(scoring_data)):
+                        temp_list = []
+                        for i in range(1,len(row.contents)):
+                            temp_list.append(row.contents[i].get_text())
 
+                        scoring_data.append(temp_list)
 
-            temp_tuple = (year, scoring_data[i][0],
-                      scoring_data[i][1],scoring_data[i][2],scoring_data[i][3],scoring_data[i][4],scoring_data[i][5]
-                   ,scoring_data[i][6],scoring_data[i][7],scoring_data[i][8])
+            except URLError, e:
+                print 'Error Code'
 
-            c.execute(self.insert_queries[0], temp_tuple )
+            for i in range(1, len(scoring_data)):
+                temp_tuple = (year)
+                for j in range(0, len(self.lengths[indices_for_database])):
+                    temp_tuple = list(temp_tuple)
+                    temp_tuple.insert(scoring_data[i][j+1])
+                    temp_tuple= tuple(temp_tuple)
 
-        conn.commit()
+                c.execute(self.insert_queries[indices_for_database], temp_tuple )
+
+            url+=2
+
+            conn.commit()
 
 
 
