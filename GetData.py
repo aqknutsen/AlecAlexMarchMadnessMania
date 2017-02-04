@@ -43,7 +43,7 @@ class GetData:
                             '''DROP TABLE EspnAssists'''
                             '''DROP TABLE EspnSteals'''
                             '''DROP TABLE EspnBlocks'''
-                            
+
     ]
 
     insert_queries = ['insert into ScoringData values (?,?,?,?,?,?,?,?,?,?)',
@@ -80,16 +80,11 @@ class GetData:
         conn = sqlite3.connect('ESPNDATA.db')
         c = conn.cursor()
 
-<<<<<<< HEAD
-
-        while year != 2002:
-=======
         prev_stat = ''
 
         indices_for_database = 0
 
         for url in range(0, len(url_links)):
->>>>>>> b7efb8e2ce14efec88dee6827afe912a236fc6b0
 
             scoring_data = [[]]
 
@@ -141,10 +136,3 @@ class GetData:
 
 Instance = GetData()
 Instance.get_scores()
-
-
-
-
-
-
-
