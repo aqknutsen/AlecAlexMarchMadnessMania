@@ -1,6 +1,4 @@
 from urllib2 import Request, urlopen, URLError
-import pandas as pd
-import numpy as np
 import sqlite3
 from bs4 import BeautifulSoup
 
@@ -71,7 +69,20 @@ class GetData:
         conn.close()
 
 
-
-
 Instance = GetData()
 Instance.get_scores()
+
+
+
+def espnpulls():
+    fulllist = []
+    print 'hello'
+    statslist = ['scoring-per-game','rebounds', 'field-goals', 'free-throws', '3-points', 'assists', 'steals', 'blocks'  ]
+    for year in range(2002,2017):
+        for statitem in statslist:
+            for count in range(1,360,40):
+                fulllist.append('http://www.espn.com/mens-college-basketball/statistics/team/_/stat/'+statitem+'/year/'+ str(year) +'/count/'+str(count))
+
+    print fulllist
+espnpulls()
+
